@@ -31,6 +31,7 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
+    "format": "node_modules/.bin/prettier --write \"**/*.{js,scss,json,md}\"",
     "precommit": "lint-staged"
   },
   "lint-staged": {
