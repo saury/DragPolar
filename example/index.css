@@ -1,0 +1,76 @@
+html,
+body {
+  margin: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 0;
+}
+
+.ar-unscramble-container {
+  height: 100vh;
+  font-size: 0;
+}
+
+.ar-unscramble-container .ar-drop-area-wrap {
+  background: #ccc;
+  height: 55%;
+}
+
+.ar-unscramble-container .ar-drag-area-wrap {
+  background: #f2f2f2;
+  height: 45%;
+}
+
+.ar-unscramble-container .ar-drop-area-wrap,
+.ar-unscramble-container .ar-drag-area-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ar-unscramble-container .ar-drop-area,
+.ar-unscramble-container .ar-drag-area {
+  flex: 1 1 auto;
+  width: 80%;
+  max-width: 80%;
+}
+
+.ar-unscramble-container .ar-drop-area {
+  background: #fff;
+}
+
+.ar-unscramble-container .ar-drag-area {
+  text-align: center;
+  background: indianred;
+}
+
+.ar-unscramble-container .ar-drag-item-placeholder {
+  display: inline-block;
+  background: rgba(87, 86, 84, 0.1);
+  margin: 10px;
+}
+
+.ar-unscramble-container .ar-drag-item-placeholder .ar-label-item {
+  z-index: 99;
+  line-height: 44px;
+  font-size: 20px;
+}
+
+.dp-drag-token .ar-label-item {
+  z-index: 99;
+  line-height: 44px;
+  font-size: 20px;
+}
+
+.ar-label-item {
+  background: #fff;
+  padding: 0 24px;
+  display: inline-block;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
