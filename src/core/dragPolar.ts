@@ -14,6 +14,7 @@ import {
   getTargetInfo,
   handleEvt,
   isChildNode,
+  XEvent
 } from './helper';
 
 export class DragPolar {
@@ -168,10 +169,10 @@ export class DragPolar {
     }
 
     const emitMiddleWare = {
-      end: (e) => this.fallout.emit('_dp-end', e),
-      move: (e) => this.fallout.emit('_dp-move', e),
-      resize: (e) => this.fallout.emit('_dp-resize', e),
-      start: (e) => this.fallout.emit('_dp-start', e),
+      end: (e: XEvent) => this.fallout.emit('_dp-end', e),
+      move: (e: XEvent) => this.fallout.emit('_dp-move', e),
+      resize: (e: XEvent) => this.fallout.emit('_dp-resize', e),
+      start: (e: XEvent) => this.fallout.emit('_dp-start', e),
     };
 
     // resize evt emitter
@@ -181,13 +182,13 @@ export class DragPolar {
       evtStatus = null;
     };
 
-    const touchStart = (e) => {
+    const touchStart = (e: XEvent) => {
       // prevent the right click or wheel click
-      if (e.button && e.button > 0) return;
+      if ((e as MouseEvent).button && (e as MouseEvent).button > 0) return;
       // limit that evt handler can only be triggered by one touch point
-      if (e.targetTouches === undefined || e.targetTouches.length === 1) {
+      if ((e as TouchEvent).targetTouches === undefined || (e as TouchEvent).targetTouches.length === 1) {
         // check if the click target is preseted drag item or its childNodes
-        const temp = $$(settings.dragItems).filter((item) => item === e.target || isChildNode(e.target, item))[0];
+        const temp = $$(settings.dragItems).filter((item) => item === e.target || isChildNode(e.target as Element, item))[0];
 
         // return if not touching on the drag item or it contains a disabled class
         if (!temp || (temp && (temp.classList.contains('disabled') || temp.classList.contains('disabled-forever')))) {
@@ -219,7 +220,7 @@ export class DragPolar {
           ele.style.visibility = 'hidden';
         }
 
-        const finger = e.touches !== undefined ? e.touches[0] : e;
+        const finger = (e as TouchEvent).touches !== undefined ? (e as TouchEvent).touches[0] : (e as MouseEvent);
         // cords of the touch cursor
         fingerX = finger.clientX + getScroll('scrollLeft', 'pageXOffset');
         fingerY = finger.clientY + getScroll('scrollTop', 'pageYOffset');
@@ -239,14 +240,14 @@ export class DragPolar {
       }
     };
 
-    const touchMove = (e) => {
+    const touchMove = (e: XEvent) => {
       if (evtStatus !== 'dp-drag-start') return;
       e.preventDefault();
       e.stopImmediatePropagation();
       // prevent the right click or wheel click
-      if (e.button && e.button > 0) return;
-      if (e.targetTouches === undefined || e.targetTouches.length === 1) {
-        const finger = e.touches !== undefined ? e.touches[0] : e;
+      if ((e as MouseEvent).button && (e as MouseEvent).button > 0) return;
+      if ((e as TouchEvent).targetTouches === undefined || (e as TouchEvent).targetTouches.length === 1) {
+        const finger = (e as TouchEvent).touches !== undefined ? (e as TouchEvent).touches[0] : (e as MouseEvent);
 
         // tslint:disable-next-line:one-variable-per-declaration
         const _translateX = finger.clientX + getScroll('scrollLeft', 'pageXOffset') - fingerX;

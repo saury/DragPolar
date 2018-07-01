@@ -49,6 +49,7 @@ const cordLength = (cordStart: [number, number], cordEnd: [number, number]) =>
 
 type Operation = 'add' | 'remove';
 type EventType = 'start' | 'move' | 'end' | 'resize' | 'scroll' | 'transitionend';
+type XEvent = MouseEvent | TouchEvent | PointerEvent;
 
 const evtList: object = (() => {
   // tslint:disable-next-line:one-variable-per-declaration
@@ -174,4 +175,4 @@ const getScroll = (scrollProp: ScrollProp, offsetProp: OffsetProp): number => {
   return document.body[scrollProp];
 };
 
-export { $$, isChildNode, dealStyle, cordOverLoad, cordLength, handleEvt, getTargetInfo, cloneAndAppend, getScroll };
+export { $$, isChildNode, dealStyle, cordOverLoad, cordLength, handleEvt, getTargetInfo, cloneAndAppend, getScroll, XEvent };
