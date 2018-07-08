@@ -138,7 +138,7 @@ export class DragPolar {
     let clickOnItem,
       dragToken,
       ele,
-      evtStatus,
+      isDragStart: boolean,
       hasMoved,
       // drag start cordinator
       fingerX,
@@ -177,9 +177,9 @@ export class DragPolar {
 
     // resize evt emitter
     const resizeEmitter = () => {
-      if (evtStatus !== 'dp-drag-start') return;
+      if (!isDragStart) return;
       this.fallout.emit('resize', dragToken, ele);
-      evtStatus = null;
+      isDragStart = false;
     };
 
     const touchStart = (e: XEvent) => {
@@ -226,7 +226,7 @@ export class DragPolar {
         fingerY = finger.clientY + getScroll('scrollTop', 'pageYOffset');
         clickOnItem = true;
 
-        evtStatus = 'dp-drag-start';
+        isDragStart = true;
         hasMoved = false;
 
         const eleInfo = getTargetInfo(ele);
@@ -241,57 +241,48 @@ export class DragPolar {
     };
 
     const touchMove = (e: XEvent) => {
-      if (evtStatus !== 'dp-drag-start') return;
+      if (!isDragStart) return;
       e.preventDefault();
       e.stopImmediatePropagation();
       // prevent the right click or wheel click
       if ((e as MouseEvent).button && (e as MouseEvent).button > 0) return;
       if ((e as TouchEvent).targetTouches === undefined || (e as TouchEvent).targetTouches.length === 1) {
         const finger = (e as TouchEvent).touches !== undefined ? (e as TouchEvent).touches[0] : (e as MouseEvent);
-
-        // tslint:disable-next-line:one-variable-per-declaration
         const _translateX = finger.clientX + getScroll('scrollLeft', 'pageXOffset') - fingerX;
         const _translateY = finger.clientY + getScroll('scrollTop', 'pageYOffset') - fingerY;
+
         // info that the drag item hit the edge of the sandbox
         const edge = {
-          bottom: 0,
-          left: 0,
-          right: 0,
-          top: 0,
+          bottom: false,
+          left: false,
+          right: false,
+          top: false,
         };
 
-        const _moveItem = (x, y) => {
+        const _moveItem = (x: number, y: number) => {
           // prevent that the clickOnItem val been changed
           if (!hasMoved && Math.abs(x) <= settings.moveTolerant && Math.abs(y) <= settings.moveTolerant) return;
           // move the item, then the click evt won't trigger any more
           clickOnItem = false;
           hasMoved = true;
 
+          const keepTranslateValid = (translateValue: number, limit: number, direction: string, greater?: boolean) => {
+            const condition = greater ? (translateValue > limit) : (translateValue < limit);
+            if(condition) {
+              translateValue = limit;
+              edge[direction] = true;
+            }
+            else{
+              edge[direction] = false;
+            }
+            return translateValue;
+          }
+
           // detect border and edge info overload
-          if (x < minTranslateX) {
-            x = minTranslateX;
-            edge.left = 1;
-          } else {
-            edge.left = 0;
-          }
-          if (y < minTranslateY) {
-            y = minTranslateY;
-            edge.top = 1;
-          } else {
-            edge.top = 0;
-          }
-          if (x > maxTranslateX) {
-            x = maxTranslateX;
-            edge.right = 1;
-          } else {
-            edge.right = 0;
-          }
-          if (y > maxTranslateY) {
-            y = maxTranslateY;
-            edge.bottom = 1;
-          } else {
-            edge.bottom = 0;
-          }
+          x = keepTranslateValid(x, minTranslateX, 'left');
+          x = keepTranslateValid(x, maxTranslateX, 'right', true);
+          y = keepTranslateValid(y, minTranslateY, 'top');
+          y = keepTranslateValid(y, maxTranslateY, 'bottom', true);
 
           dealStyle(dragToken, {
             '-webkit-transform': `translate3d(${x}px, ${y}px, 0)`,
@@ -311,10 +302,10 @@ export class DragPolar {
     };
 
     const touchEnd = () => {
-      if (evtStatus !== 'dp-drag-start') return;
+      if (!isDragStart) return;
       clickOnItem ? this.fallout.emit('click', dragToken, ele) : this.fallout.emit('drop', dragToken, ele);
 
-      evtStatus = null;
+      isDragStart = false;
     };
 
     this.fallout.on('_dp-resize', resizeEmitter);
