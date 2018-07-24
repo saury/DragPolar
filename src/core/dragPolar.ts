@@ -14,8 +14,9 @@ import {
   getTargetInfo,
   handleEvt,
   isChildNode,
-  XEvent
+  XEvent,
 } from './helper';
+import { Fallout } from './Fallout';
 
 export class DragPolar {
   /**
@@ -101,7 +102,7 @@ export class DragPolar {
   }
 
   // event emitter
-  private fallout;
+  public fallout: Fallout;
 
   /**
    * Creates an instance of DragPolar.
@@ -188,7 +189,9 @@ export class DragPolar {
       // limit that evt handler can only be triggered by one touch point
       if ((e as TouchEvent).targetTouches === undefined || (e as TouchEvent).targetTouches.length === 1) {
         // check if the click target is preseted drag item or its childNodes
-        const temp = $$(settings.dragItems).filter((item) => item === e.target || isChildNode(e.target as Element, item))[0];
+        const temp = $$(settings.dragItems).filter(
+          (item) => item === e.target || isChildNode(e.target as Element, item),
+        )[0];
 
         // return if not touching on the drag item or it contains a disabled class
         if (!temp || (temp && (temp.classList.contains('disabled') || temp.classList.contains('disabled-forever')))) {
@@ -261,22 +264,23 @@ export class DragPolar {
 
         const _moveItem = (x: number, y: number) => {
           // prevent that the clickOnItem val been changed
-          if (!hasMoved && Math.abs(x) <= settings.moveTolerant && Math.abs(y) <= settings.moveTolerant) return;
+          if (!hasMoved && Math.abs(x) <= settings.moveTolerant && Math.abs(y) <= settings.moveTolerant) {
+            return;
+          }
           // move the item, then the click evt won't trigger any more
           clickOnItem = false;
           hasMoved = true;
 
           const keepTranslateValid = (translateValue: number, limit: number, direction: string, greater?: boolean) => {
-            const condition = greater ? (translateValue > limit) : (translateValue < limit);
-            if(condition) {
+            const condition = greater ? translateValue > limit : translateValue < limit;
+            if (condition) {
               translateValue = limit;
               edge[direction] = true;
-            }
-            else{
+            } else {
               edge[direction] = false;
             }
             return translateValue;
-          }
+          };
 
           // detect border and edge info overload
           x = keepTranslateValid(x, minTranslateX, 'left');

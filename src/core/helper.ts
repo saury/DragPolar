@@ -175,4 +175,15 @@ const getScroll = (scrollProp: ScrollProp, offsetProp: OffsetProp): number => {
   return document.body[scrollProp];
 };
 
-export { $$, isChildNode, dealStyle, cordOverLoad, cordLength, handleEvt, getTargetInfo, cloneAndAppend, getScroll, XEvent };
+export {
+  $$,
+  isChildNode,
+  dealStyle,
+  cordOverLoad,
+  cordLength,
+  handleEvt,
+  getTargetInfo,
+  cloneAndAppend,
+  getScroll,
+  XEvent,
+};
