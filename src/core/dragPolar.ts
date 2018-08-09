@@ -202,9 +202,6 @@ export class DragPolar {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        // set border of the dragging area
-        setBorder();
-
         // duplicate the drag item as a token and emit the cloned evt
         dragToken = cloneAndAppend(ele, (token) => {
           token.classList.add(settings.dragTokenClass);
@@ -240,6 +237,9 @@ export class DragPolar {
           startX: eleInfo.target_X,
           startY: eleInfo.target_Y,
         });
+
+        // set border of the dragging area
+        setBorder();
       }
     };
 
