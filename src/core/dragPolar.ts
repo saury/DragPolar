@@ -118,6 +118,7 @@ export class DragPolar {
       moveTolerant: 0,
       phantomClass: 'dp-phantom',
       sandbox: document.documentElement,
+      context: document.body,
       sandboxPad: [0, 0, 0, 0],
     };
     // overload
@@ -203,10 +204,14 @@ export class DragPolar {
         e.stopImmediatePropagation();
 
         // duplicate the drag item as a token and emit the cloned evt
-        dragToken = cloneAndAppend(ele, (token) => {
-          token.classList.add(settings.dragTokenClass);
-          this.fallout.emit('cloned', token, ele);
-        });
+        dragToken = cloneAndAppend(
+          ele,
+          (token) => {
+            token.classList.add(settings.dragTokenClass);
+            this.fallout.emit('cloned', token, ele);
+          },
+          settings.context,
+        );
 
         // disable all the drag items to prevent combo operation
         $$(settings.dragItems).forEach((item: Element) => {
