@@ -77,6 +77,8 @@ export class DragPolar {
   ): void {
     const target = addWrap ? cloneAndAppend(ele, addWrapCallback) : ele;
     const desCor = cordOverLoad(destination, target);
+    const eleTransformVal = ele.style.transform || ele.style.webkitTransform;
+    let rmEvt;
 
     dealStyle(target, {
       '-webkit-transition': `-webkit-transform ${duration}ms linear`,
@@ -89,16 +91,26 @@ export class DragPolar {
         '-webkit-transform': `translate3d(${desCor[0]}px, ${desCor[1]}px, 0)`,
         transform: `translate3d(${desCor[0]}px, ${desCor[1]}px, 0)`,
       });
+      const tarTransformVal = target.style.transform || target.style.webkitTransform;
+      // compare transform value for preventing transitionend evt not triggered
+      if (eleTransformVal === tarTransformVal) {
+        moveEndCallback && moveEndCallback();
+        rmEvt && rmEvt();
+      }
     });
 
-    duration
-      ? handleEvt(target, 'add', 'transitionend', function _moveEndCallback(e) {
-          if (e.target !== target) return;
-          moveEndCallback && moveEndCallback(e);
-          // make sure the move end evt executes only once
-          handleEvt(target, 'remove', 'transitionend', _moveEndCallback);
-        })
-      : moveEndCallback && moveEndCallback();
+    if (duration) {
+      let _moveEndCallback = (e) => {
+        if (e.target !== target) return;
+        moveEndCallback && moveEndCallback(e);
+        // make sure the move end evt executes only once
+        rmEvt && rmEvt();
+      };
+      rmEvt = handleEvt(target, 'remove', 'transitionend', _moveEndCallback);
+      handleEvt(target, 'add', 'transitionend', _moveEndCallback);
+    } else {
+      moveEndCallback && moveEndCallback();
+    }
   }
 
   // event emitter
